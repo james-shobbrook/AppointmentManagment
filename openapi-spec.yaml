@@ -1,0 +1,221 @@
+openapi: 3.0.0
+info:
+  title: Appointment Booking API
+  version: 1.0.0
+paths:
+  /api/v1/appointments:
+    get:
+      summary: Get a list of all appointments.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Appointment'
+              example:
+                - id: 1
+                  type:
+                    id: 1
+                    name: Massage
+                  date_time: '2023-03-08T10:00:00.000000Z'
+                  duration: 60
+                  customers:
+                    - id: 1
+                      name: John Doe
+                      email: johndoe@example.com
+                      phone: 555-555-5555
+                - id: 2
+                  type:
+                    id: 2
+                    name: Doctor
+                  date_time: '2023-03-10T12:00:00.000000Z'
+                  duration: 60
+                  customers:
+                    - id: 1
+                      name: John Doe
+                      email: johndoe@example.com
+                      phone: 555-555-5555
+                    - id: 2
+                      name: Jane Doe
+                      email: janedoe@example.com
+                      phone: 555-555-1234
+    post:
+      summary: Create a new appointment.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewAppointment'
+            example:
+              type_id: 1
+              date_time: '2023-03-10T12:00:00.000000Z'
+              duration: 90
+              customer_ids: [1,2]
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Appointment'
+              example:
+                id: 3
+                type:
+                  id: 1
+                  name: Massage
+                date_time: '2023-03-10T12:00:00.000000Z'
+                duration: 90
+                customers:
+                  - id: 1
+                    name: John Doe
+                    email: johndoe@example.com
+                    phone: 555-555-5555
+                  - id: 2
+                    name: Jane Doe
+                    email: janedoe@example.com
+                    phone: 555-555-1234
+  /api/v1/customers:
+    get:
+      summary: Get a list of all customers.
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Customer'
+              example:
+                - id: 1
+                  name: John Doe
+                  email: johndoe@example.com
+                  phone: 555-555-5555
+                  appointments:
+                    - id: 1
+                      type:
+                        id: 1
+                        name: Massage
+                    - id: 2
+                      type:
+                        id: 2
+                        name: Doctor
+                      date_time: '2023-03-10T12:00:00.000000Z'
+                      duration: 60
+                - id: 2
+                  name: Jane Doe
+                  email: janedoe@example.com
+                  phone: 555-555-5555
+                  appointments: []
+
+components:
+          schemas:
+            Appointment:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  description: The ID of the appointment.
+                type:
+                  $ref: '#/components/schemas/AppointmentType'
+                date_time:
+                  type: string
+                  format: date-time
+                  description: The date and time of the appointment in ISO 8601 format.
+                duration:
+                  type: integer
+                  description: The duration of the appointment in minutes.
+                customers:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Customer'
+              example:
+                id: 1
+                type:
+                  id: 1
+                  name: Massage
+                date_time: '2023-03-08T10:00:00.000000Z'
+                duration: 60
+                customers:
+                  - id: 1
+                    name: John Doe
+                    email: johndoe@example.com
+                    phone: 555-555-5555
+
+            AppointmentType:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  description: The ID of the appointment type.
+                name:
+                  type: string
+                  description: The name of the appointment type.
+              example:
+                id: 1
+                name: Massage
+
+            Customer:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  description: The ID of the customer.
+                name:
+                  type: string
+                  description: The name of the customer.
+                email:
+                  type: string
+                  format: email
+                  description: The email address of the customer.
+                phone:
+                  type: string
+                  description: The phone number of the customer.
+                appointments:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Appointment'
+              example:
+                id: 1
+                name: John Doe
+                email: johndoe@example.com
+                phone: 555-555-5555
+                appointments:
+                  - id: 1
+                    type:
+                      id: 1
+                      name: Massage
+                  - id: 2
+                    type:
+                      id: 2
+                      name: Doctor
+                    date_time: '2023-03-10T12:00:00.000000Z'
+                    duration: 60
+
+            NewAppointment:
+              type: object
+              properties:
+                type_id:
+                  type: integer
+                  description: The ID of the appointment type.
+                date_time:
+                  type: string
+                  format: date-time
+                  description: The date and time of the appointment in ISO 8601 format.
+                duration:
+                  type: integer
+                  description: The duration of the appointment in minutes.
+                customer_ids:
+                  type: array
+                  items:
+                    type: integer
+                  description: The IDs of the customers for the appointment.
+              example:
+                type_id: 1
+                date_time: '2023-03-10T12:00:00.000000Z'
+                duration: 90
+                customer_ids: [1,2]
